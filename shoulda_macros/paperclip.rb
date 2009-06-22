@@ -60,6 +60,18 @@ module Paperclip
         assert_accepts(matcher, klass)
       end
     end
+    
+    # Test for validating a minimum height and width for an image attachment
+    def should_validate_image_dimensions name, options = {}
+      klass   = self.name.gsub(/Test$/, '').constantize
+      height  = options[:height]
+      width   = options[:width]
+      range   = (min..max)
+      matcher = validate_image_dimensions(name).in(range)
+      should matcher.description do
+        assert_accepts(matcher, klass)
+      end
+    end
   end
 end
 
