@@ -31,6 +31,7 @@ require 'paperclip/iostream'
 require 'paperclip/geometry'
 require 'paperclip/processor'
 require 'paperclip/thumbnail'
+require 'paperclip/image_science'
 require 'paperclip/storage'
 require 'paperclip/interpolations'
 require 'paperclip/attachment'
@@ -282,6 +283,12 @@ module Paperclip
                                                                  :if      => options[:if],
                                                                  :unless  => options[:unless]}]
     end
+
+    def validates_attachment_image_dimensions name, options = {}
+      options[:message] ||= "must be at least #{options[:height]}x#{options[:width]}"
+      attachment_definitions[name][:validations] << [:image_dimensions, options]
+    end
+
     
     # Places ActiveRecord-style validations on the content type of the file
     # assigned. The possible options are: 

@@ -296,7 +296,7 @@ module Paperclip
         options[:message].gsub(/:min/, options[:min].to_s).gsub(/:max/, options[:max].to_s)
       end
     end
-
+    
     def validate_presence options #:nodoc:
       options[:message] unless file?
     end
@@ -311,6 +311,22 @@ module Paperclip
           end
         end
       end
+    end
+    
+    def validate_image_dimensions options
+      return nil unless file?
+      
+      if @processors.include? :image_science
+        geometry = Geometry.image_science_from_file(File.expand_path(queued_for_write[:original].path))
+      else
+        geometry = Geometry.from_file(File.expand_path(queued_for_write[:original].path))
+      end
+
+      if options[:height].to_i <= geometry.height.to_i  && options[:width].to_i <= geometry.width.to_i
+        options.delete(:message)
+      end
+      
+      options[:message]
     end
 
     def normalize_style_definition #:nodoc:

@@ -23,13 +23,21 @@ module Paperclip
       parse(geometry) ||
         raise(NotIdentifiedByImageMagickError.new("#{file} is not recognized by the 'identify' command."))
     end
-
+    
     # Parses a "WxH" formatted string, where W is the width and H is the height.
     def self.parse string
       if match = (string && string.match(/\b(\d*)x?(\d*)\b([\>\<\#\@\%^!])?/i))
         Geometry.new(*match[1,3])
       end
     end
+    
+    def self.image_science_from_file file
+      file = file.path if file.respond_to? "path"
+      ::ImageScience.with_image(file) do |img|
+        Geometry.new(img.width, img.height)
+      end
+    end
+    
 
     # True if the dimensions represent a square
     def square?
